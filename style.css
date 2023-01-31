@@ -2,21 +2,26 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  --board-width: 400px;
 }
 
 .container {
   display: grid;
   grid-template-columns: repeat(3, auto);
-  margin: auto;
-  width: 300px;
+  margin: 50px auto;
+  width: var(--board-width);
+}
+
+body {
+  text-align: center;
 }
 
 .cell {
   display: grid;
   place-items: center;
   border: 1px solid black;
-  width: 100px;
-  height: 100px;
-  font-size: 2rem;
+  width: calc(var(--board-width) / 3);
+  height: calc(var(--board-width) / 3);
+  font-size: calc(var(--board-width) / 5);
   cursor: pointer;
 }

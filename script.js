@@ -4,7 +4,7 @@ function PlayerFactory(name, mark) {
 
 const gameBoard = (() => {
   const _boardDOMCells = document.querySelector(".container").children;
-  const _board = new Array(9).fill("");
+  let _board = new Array(9).fill("");
   const _winningConditions = [
     [0, 1, 2],
     [3, 4, 5],
@@ -24,7 +24,7 @@ const gameBoard = (() => {
     }
   }
 
-  function checkForWinner() {
+  function _checkForWinner() {
     for (let i = 0; i < _winningConditions.length; i++) {
       const winCondition = _winningConditions[i];
       const a = _board[winCondition[0]];
@@ -41,6 +41,11 @@ const gameBoard = (() => {
     }
   }
 
+  function resetBoard() {
+    _board = new Array(9).fill("");
+    Array.from(_boardDOMCells).forEach((cell) => (cell.textContent = ""));
+  }
+
   function addMark(clickEvent) {
     if (gameManager.isGameRunning()) {
       const boardIndex = clickEvent.target.getAttribute("data-cell-index");
@@ -48,7 +53,7 @@ const gameBoard = (() => {
       if (_board[boardIndex] === "") {
         _board[boardIndex] = gameManager.getCurrentPlayer().mark;
 
-        checkForWinner();
+        _checkForWinner();
 
         if (gameManager.isGameRunning()) {
           gameManager.changeCurrentPlayer();
@@ -59,20 +64,28 @@ const gameBoard = (() => {
     }
   }
 
-  return { render, addMark, _board };
+  return { render, addMark, resetBoard };
 })();
 
 const gameManager = (() => {
   const _player1 = PlayerFactory("Tom", "X");
   const _player2 = PlayerFactory("John", "O");
   let _currentPlayer = _player1;
-  let gameRunning = true;
+  let _gameRunning = true;
 
   (function setupEventListeners() {
     document
       .querySelectorAll(".cell")
       .forEach((cell) => cell.addEventListener("click", gameBoard.addMark));
+
+    document.querySelector(".reset").addEventListener("click", _resetGame);
   })();
+
+  function _resetGame() {
+    gameBoard.resetBoard();
+    _currentPlayer = _player1;
+    _gameRunning = true;
+  }
 
   function getCurrentPlayer() {
     return _currentPlayer;
@@ -85,12 +98,12 @@ const gameManager = (() => {
   }
 
   function announceWinner() {
-    gameRunning = false;
+    _gameRunning = false;
     console.log(`Game over! The winner is ${getCurrentPlayer().name}`);
   }
 
   function isGameRunning() {
-    return gameRunning;
+    return _gameRunning;
   }
 
   return {
