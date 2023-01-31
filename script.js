@@ -3,7 +3,7 @@ function PlayerFactory(name, mark) {
 }
 
 const gameBoard = (() => {
-  const _boardDOMCells = document.querySelector(".container").children;
+  const _boardDOMCells = document.querySelector(".game-board").children;
   let _board = new Array(9).fill("");
   const _winningConditions = [
     [0, 1, 2],
@@ -36,7 +36,9 @@ const gameBoard = (() => {
       }
 
       if (a === b && b === c) {
-        gameManager.announceWinner();
+        gameManager.endGame("winner");
+      } else if (_board.every((elem) => elem !== "")) {
+        gameManager.endGame("draw");
       }
     }
   }
@@ -70,6 +72,7 @@ const gameBoard = (() => {
 const gameManager = (() => {
   const _player1 = PlayerFactory("Tom", "X");
   const _player2 = PlayerFactory("John", "O");
+  const results = document.querySelector(".final-results");
   let _currentPlayer = _player1;
   let _gameRunning = true;
 
@@ -85,6 +88,7 @@ const gameManager = (() => {
     gameBoard.resetBoard();
     _currentPlayer = _player1;
     _gameRunning = true;
+    results.textContent = "";
   }
 
   function getCurrentPlayer() {
@@ -99,17 +103,25 @@ const gameManager = (() => {
 
   function announceWinner() {
     _gameRunning = false;
-    console.log(`Game over! The winner is ${getCurrentPlayer().name}`);
+    results.textContent = `Game over! The winner is ${getCurrentPlayer().name}`;
+  }
+
+  function announceDraw() {
+    results.textContent = `Game over! It's a draw!`;
   }
 
   function isGameRunning() {
     return _gameRunning;
   }
 
+  function endGame(result) {
+    result === "winner" ? announceWinner() : announceDraw();
+  }
+
   return {
     getCurrentPlayer,
     changeCurrentPlayer,
-    announceWinner,
+    endGame,
     isGameRunning,
   };
 })();
